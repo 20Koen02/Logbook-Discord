@@ -2,7 +2,7 @@ import { ShardingManager } from "discord.js";
 import env from "./env";
 import { color } from "./util/util";
 
-const manager = new ShardingManager("dist/bot.js", {
+const manager = new ShardingManager("dist/src/bot.js", {
   token: env.TOKEN,
 });
 

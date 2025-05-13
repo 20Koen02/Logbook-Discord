@@ -3,10 +3,10 @@
 services:
   logbook-discord:
     container_name: logbook-discord
-    image: ghcr.io/20koen02/logbook_discord:latest
+    image: ghcr.io/20koen02/logbook-discord:latest
     platform: linux/amd64
     restart: unless-stopped
     build: .
     volumes:
-      - .env:/usr/src/app/.env
-      - production.db:/usr/src/app/production.db
+      - ./.env:/usr/src/app/.env
+      - ./production.db:/usr/src/app/production.db
