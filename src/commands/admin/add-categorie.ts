@@ -119,7 +119,7 @@ const command: Command = {
     let message = addedCategory
       ? `De categorie ${categoryName} (${categoryValue}) is toegevoegd\n`
       : "";
-    message += `De subcategorie ${subcategoryName} (${subcategoryValue}) is toegevoegd aan de categorie ${categoryName} (${categoryValue})`;
+    message += `De subcategorie ${subcategoryName} (${subcategoryValue}) is toegevoegd aan de categorie ${categoriesResult[0].name} (${categoriesResult[0].value})`;
 
     await interaction.reply(message);
     await mutateScoreboard(interaction.client, interaction.guildId);
