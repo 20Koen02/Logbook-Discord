@@ -29,6 +29,7 @@ const command: Command = {
 
     await interaction.reply({
       content: `Het logboekkanaal is succesvol ingesteld op ${interaction.channel}`,
+      ephemeral: true
     });
   },
 };

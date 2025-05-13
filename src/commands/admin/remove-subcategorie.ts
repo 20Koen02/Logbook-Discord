@@ -50,13 +50,12 @@ const command: Command = {
       .where(
         and(
           eq(subcategories.guild, interaction.guildId),
-          eq(subcategories.id, result.subcategory.id),
-        ),
+          eq(subcategories.id, result.subcategory.id)
+        )
       );
 
     await interaction.reply({
       content: `Subcategorie ${result.subcategory.name} (${result.subcategory.value}) is succesvol verwijderd!`,
-      ephemeral: true,
     });
 
     await mutateScoreboard(interaction.client, interaction.guildId);

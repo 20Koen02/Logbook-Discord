@@ -101,7 +101,6 @@ const command: Command = {
 
       await interaction.reply({
         content: `Categorie ${categoriesResult[0].name} (${categoriesResult[0].value}) is succesvol verwijderd!`,
-        ephemeral: true,
       });
 
       await mutateScoreboard(interaction.client, interaction.guildId);
