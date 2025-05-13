@@ -30,3 +30,8 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/20koen02/logbook-discord:latest
+
+      - name: Deploy Container Webhook
+        uses: joelwmale/webhook-action@master
+        env:
+          WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL  }}
