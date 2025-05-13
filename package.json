@@ -17,7 +17,6 @@
   "license": "LGPL-3.0",
   "devDependencies": {
     "@eslint/js": "^9.15.0",
-    "@paralleldrive/cuid2": "^2.2.2",
     "@types/common-tags": "^1.8.4",
     "drizzle-kit": "^0.28.1",
     "eslint": "^9.15.0",
@@ -30,6 +29,7 @@
     "typescript-eslint": "^8.15.0"
   },
   "dependencies": {
+    "@paralleldrive/cuid2": "^2.2.2",
     "@libsql/client": "^0.14.0",
     "chalk": "^4.1.2",
     "common-tags": "^1.8.2",
