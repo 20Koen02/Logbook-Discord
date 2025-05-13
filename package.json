@@ -1,0 +1,42 @@
+{
+  "name": "logbook-discord",
+  "version": "1.0.0",
+  "description": "Custom yearly logbook of events that happen in your discord community",
+  "main": "dist/index.js",
+  "scripts": {
+    "start:dev": "tsx watch src/bot.ts",
+    "build": "rimraf ./dist && tsc",
+    "start": "node dist/index.js",
+    "format": "prettier --write src",
+    "lint": "prettier --check src && eslint src",
+    "db:push": "drizzle-kit push",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
+  },
+  "author": "Koen van Wijngaarden",
+  "license": "LGPL-3.0",
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "@paralleldrive/cuid2": "^2.2.2",
+    "@types/common-tags": "^1.8.4",
+    "drizzle-kit": "^0.28.1",
+    "eslint": "^9.15.0",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.12.0",
+    "prettier": "^3.3.3",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.15.0"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "chalk": "^4.1.2",
+    "common-tags": "^1.8.2",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.36.3",
+    "reflect-metadata": "^0.2.2",
+    "zod": "^3.23.8"
+  }
+}

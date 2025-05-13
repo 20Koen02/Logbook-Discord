@@ -1,0 +1,12 @@
+# docker push ghcr.io/20koen02/Logbook-discord:latest
+
+services:
+  logbook-discord:
+    container_name: logbook-discord
+    image: ghcr.io/20koen02/Logbook-Discord:latest
+    platform: linux/amd64
+    restart: unless-stopped
+    build: .
+    volumes:
+      - .env:/usr/src/app/.env
+      - production.db:/usr/src/app/production.db
