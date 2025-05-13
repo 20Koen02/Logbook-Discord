@@ -21,13 +21,13 @@ const command: Command = {
         .setName("categorie")
         .setDescription("Categorie van de gebeurtenis")
         .setRequired(true)
-        .setAutocomplete(true),
+        .setAutocomplete(true)
     )
     .addStringOption((option) =>
       option
         .setName("subcategorie")
         .setDescription("Subcategorie van de gebeurtenis")
-        .setRequired(true),
+        .setRequired(true)
     ),
   autocomplete: async (interaction) => {
     const focusedValue = interaction.options.getFocused();
@@ -38,9 +38,11 @@ const command: Command = {
       .where(eq(categories.guild, interaction.guildId));
 
     const filtered = choices.filter((choice) =>
-      choice.name.startsWith(focusedValue),
+      choice.name.startsWith(focusedValue)
     );
-    await interaction.respond(filtered);
+    await interaction.respond(
+      filtered.map((choice) => ({ name: choice.name, value: choice.id }))
+    );
   },
   execute: async (interaction) => {
     if (!(await checkGuildOk(interaction))) {
@@ -63,8 +65,8 @@ const command: Command = {
       .where(
         and(
           eq(categories.guild, interaction.guildId),
-          eq(categories.value, categoryValue),
-        ),
+          eq(categories.id, category)
+        )
       );
 
     if (categoriesResult.length === 0) {

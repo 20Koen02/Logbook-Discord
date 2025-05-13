@@ -24,7 +24,7 @@ const command: Command = {
         .setName("categorie")
         .setDescription("Categorie van de gebeurtenis")
         .setRequired(true)
-        .setAutocomplete(true),
+        .setAutocomplete(true)
     ),
   autocomplete: async (interaction) => {
     const focusedValue = interaction.options.getFocused();
@@ -35,9 +35,11 @@ const command: Command = {
       .where(eq(categories.guild, interaction.guildId));
 
     const filtered = choices.filter((choice) =>
-      choice.name.startsWith(focusedValue),
+      choice.name.startsWith(focusedValue)
     );
-    await interaction.respond(filtered);
+    await interaction.respond(
+      filtered.map((choice) => ({ name: choice.name, value: choice.id }))
+    );
   },
   execute: async (interaction) => {
     if (!(await checkGuildOk(interaction))) {
@@ -58,8 +60,8 @@ const command: Command = {
       .where(
         and(
           eq(categories.guild, interaction.guildId),
-          eq(categories.value, categoryValue),
-        ),
+          eq(categories.id, category)
+        )
       );
 
     if (!categoriesResult.length) {
@@ -76,13 +78,13 @@ const command: Command = {
       .where(
         and(
           eq(subcategories.guild, interaction.guildId),
-          eq(subcategories.category, categoriesResult[0].id),
-        ),
+          eq(subcategories.category, categoriesResult[0].id)
+        )
       );
 
     if (subcategoriesResult.length) {
       await interaction.reply({
-        content: stripIndents`Categorie ${categoryName} (${categoryValue}) heeft nog gekoppelde subcategorieën! 
+        content: stripIndents`Categorie ${categoriesResult[0].name} (${categoriesResult[0].value}) heeft nog gekoppelde subcategorieën! 
         Verwijder eerst de subcategorie(ën) \`${subcategoriesResult.map((subcategory) => subcategory.name).join(", ")}\` voordat je de categorie verwijdert.`,
         ephemeral: true,
       });
@@ -93,12 +95,12 @@ const command: Command = {
         .where(
           and(
             eq(categories.guild, interaction.guildId),
-            eq(categories.value, categoryValue),
-          ),
+            eq(categories.id, categoriesResult[0].id)
+          )
         );
 
       await interaction.reply({
-        content: `Categorie ${categoryName} (${categoryValue}) is succesvol verwijderd!`,
+        content: `Categorie ${categoriesResult[0].name} (${categoriesResult[0].value}) is succesvol verwijderd!`,
         ephemeral: true,
       });
 
