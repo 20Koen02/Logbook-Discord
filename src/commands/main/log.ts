@@ -23,20 +23,20 @@ const command: Command = {
       option
         .setName("bewijs")
         .setDescription("Bijvoorbeeld de reden of een Message Link")
-        .setRequired(true),
+        .setRequired(true)
     )
     .addNumberOption((option) =>
       option
         .setName("hoeveelheid")
         .setDescription("Hoeveel moet ik aan het logboek toevoegen?")
         .setRequired(true)
-        .setMinValue(1),
+        .setMinValue(1)
     )
     .addStringOption((option) =>
       option
         .setName("zoeken")
         .setDescription("Zoek de subcategorie van de gebeurtenis")
-        .setAutocomplete(true),
+        .setAutocomplete(true)
     ),
   autocomplete: searchAutocomplete,
   execute: async (interaction) => {
@@ -54,10 +54,11 @@ const command: Command = {
     const amount = interaction.options.getNumber("hoeveelheid");
     const search = interaction.options.getString("zoeken");
 
-    const { category, subcategory } = await executeGetCategoryAndSubcategory(
-      interaction,
-      search,
-    );
+    const result = await executeGetCategoryAndSubcategory(interaction, search);
+
+    if (!result) return;
+
+    const { category, subcategory } = result;
 
     const logId = createId();
 
@@ -68,7 +69,7 @@ const command: Command = {
         .setTitle(`+${amount} ${unitFormatted}${subcategory.name}`)
         .setDescription(
           stripIndents`${reason}
-          Toegevoegd door ${interaction.user}`,
+          Toegevoegd door ${interaction.user}`
         )
         .setFooter({
           text: `${category.name} › ${subcategory.name}`,
