@@ -6,7 +6,7 @@ import {
 import { Command } from "../../types";
 import { logs } from "../../db/schema";
 import { checkGuildOk } from "../../util/check-guild";
-import { createId, getThemeColor } from "../../util/util";
+import { color, createId, getThemeColor } from "../../util/util";
 import { mutateScoreboard } from "../../util/scoreboard-utils";
 import {
   searchAutocomplete,
@@ -53,6 +53,13 @@ const command: Command = {
     const reason = interaction.options.getString("bewijs");
     const amount = interaction.options.getNumber("hoeveelheid");
     const search = interaction.options.getString("zoeken");
+
+    console.log(
+      color(
+        "text",
+        `User ${color("variable", interaction.user.username)} (${interaction.user.id}) executed log command (reason: ${color("variable", reason)}, amount: ${color("variable", amount)}, search: ${color("variable", search)}) in guild ${color("variable", interaction.guildId)}`
+      )
+    );
 
     const result = await executeGetCategoryAndSubcategory(interaction, search);
 
