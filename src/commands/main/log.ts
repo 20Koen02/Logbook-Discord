@@ -84,6 +84,9 @@ const command: Command = {
         });
       const logMessage = await logbookChannel.send({ embeds: [embed] });
 
+      await logMessage.react("👍");
+      logMessage.react("👎");
+
       await interaction.client.db
         .insert(logs)
         .values({
