@@ -27,7 +27,7 @@ const command: Command = {
     )
     .addNumberOption((option) =>
       option
-        .setName("hoeveelheid")
+        .setName("aantal")
         .setDescription("Hoeveel moet ik aan het logboek toevoegen?")
         .setRequired(true)
         .setMinValue(1)
@@ -51,7 +51,7 @@ const command: Command = {
     }
 
     const reason = interaction.options.getString("bewijs");
-    const amount = interaction.options.getNumber("hoeveelheid");
+    const amount = interaction.options.getNumber("aantal");
     const search = interaction.options.getString("zoeken");
 
     console.log(
@@ -70,10 +70,10 @@ const command: Command = {
     const logId = createId();
 
     try {
-      const unitFormatted = subcategory.unit ? subcategory.unit + " " : "";
+      const unitFormatted = subcategory.unit ? " " + subcategory.unit : "";
       const embed = new EmbedBuilder()
         .setColor(getThemeColor("primary"))
-        .setTitle(`+${amount} ${unitFormatted}${subcategory.name}`)
+        .setTitle(`+${amount} ${subcategory.name}${unitFormatted}`)
         .setDescription(
           stripIndents`${reason}
           Toegevoegd door ${interaction.user}`
