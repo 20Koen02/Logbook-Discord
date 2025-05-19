@@ -19,7 +19,7 @@ const event: BotEvent = {
       Snowflake,
       OmitPartialGroupDMChannel<Message | PartialMessage>
     >,
-    channel: GuildTextBasedChannel,
+    channel: GuildTextBasedChannel
   ) => {
     const guildsResult = await channel.client.db
       .select()
@@ -29,7 +29,7 @@ const event: BotEvent = {
     if (!guildsResult.length || !guildsResult[0].log_channel) return;
 
     const logbookChannel = await channel.client.channels.fetch(
-      guildsResult[0].log_channel,
+      guildsResult[0].log_channel
     );
 
     if (!logbookChannel) return;
@@ -40,14 +40,14 @@ const event: BotEvent = {
     let mutated = false;
 
     // Messages are in the logbook channel, delete them from the database if they exists
-    messages.forEach(async (message) => {
+    for (const message of messages.values()) {
       const deleted = await message.client.db
         .delete(logs)
         .where(eq(logs.log_message, message.id))
         .returning();
 
       if (deleted.length) mutated = true;
-    });
+    }
 
     if (mutated) await mutateScoreboard(channel.client, channel.guildId);
   },
