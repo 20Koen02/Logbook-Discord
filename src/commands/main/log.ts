@@ -70,10 +70,10 @@ const command: Command = {
     const logId = createId();
 
     try {
-      const unitFormatted = subcategory.unit ? " " + subcategory.unit : "";
+      const unitFormatted = subcategory.unit ? subcategory.unit + " " : "";
       const embed = new EmbedBuilder()
         .setColor(getThemeColor("primary"))
-        .setTitle(`+${amount} ${subcategory.name}${unitFormatted}`)
+        .setTitle(`+${amount} ${unitFormatted}${subcategory.name}`)
         .setDescription(
           stripIndents`${reason}
           Toegevoegd door ${interaction.user}`
