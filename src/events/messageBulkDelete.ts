@@ -19,7 +19,7 @@ const event: BotEvent = {
       Snowflake,
       OmitPartialGroupDMChannel<Message | PartialMessage>
     >,
-    channel: GuildTextBasedChannel
+    channel: GuildTextBasedChannel,
   ) => {
     const guildsResult = await channel.client.db
       .select()
@@ -29,7 +29,7 @@ const event: BotEvent = {
     if (!guildsResult.length || !guildsResult[0].log_channel) return;
 
     const logbookChannel = await channel.client.channels.fetch(
-      guildsResult[0].log_channel
+      guildsResult[0].log_channel,
     );
 
     if (!logbookChannel) return;

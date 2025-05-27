@@ -11,7 +11,7 @@ const event: BotEvent = {
     client.user.setActivity("Koen", { type: ActivityType.Watching });
 
     console.log(
-      color("text", `💪 Logged in as ${color("variable", client.user?.tag)}`)
+      color("text", `💪 Logged in as ${color("variable", client.user?.tag)}`),
     );
 
     for (const guild of await client.guilds.fetch()) {

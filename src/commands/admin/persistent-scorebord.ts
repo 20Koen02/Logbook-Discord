@@ -3,12 +3,13 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
-import { Command } from "../../types";
+import { SlashCommand } from "../../types";
 import { guilds } from "../../db/schema";
 import { generateScoreboardEmbed } from "../../util/scoreboard-utils";
 import { checkGuildOk } from "../../util/check-guild";
+import { reply } from "../../util/reply";
 
-const command: Command = {
+const command: SlashCommand = {
   command: new SlashCommandBuilder()
     .setName("persistent-scorebord")
     .setDescription("Maakt een scorebord aan die door de bot wordt bijgewerkt")
@@ -18,10 +19,7 @@ const command: Command = {
     const logbookChannel = await checkGuildOk(interaction);
 
     if (!logbookChannel) {
-      await interaction.reply({
-        content: "Logboek kanaal is nog niet ingesteld!",
-        ephemeral: true,
-      });
+      await reply(interaction, "Logboek kanaal is nog niet ingesteld!");
       return;
     }
 
@@ -34,20 +32,17 @@ const command: Command = {
 
     await interaction.client.db
       .insert(guilds)
-      .values({
-        id: interaction.guildId,
-        scoreboard_message: sbMessage.id,
-      })
+      .values({ id: interaction.guildId, scoreboard_message: sbMessage.id })
       // if the guild already exists, update the scoreboard_message
       .onConflictDoUpdate({
         target: guilds.id,
         set: { scoreboard_message: sbMessage.id },
       });
 
-    await interaction.reply({
-      content: `Scoreboard bericht is succesvol toegevoegd: ${sbMessage.url}`,
-      ephemeral: true,
-    });
+    await reply(
+      interaction,
+      `Scoreboard bericht is succesvol toegevoegd: ${sbMessage.url}`,
+    );
   },
 };
 

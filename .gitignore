@@ -131,3 +131,5 @@ dist
 
 local.db
 production.db
+
+.vscode/

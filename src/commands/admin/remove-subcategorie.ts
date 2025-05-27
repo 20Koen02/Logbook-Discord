@@ -5,7 +5,7 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
-import { Command } from "../../types";
+import { SlashCommand } from "../../types";
 import { checkGuildOk } from "../../util/check-guild";
 import {
   searchAutocomplete,
@@ -14,8 +14,9 @@ import {
 import { subcategories } from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 import { mutateScoreboard } from "../../util/scoreboard-utils";
+import { reply } from "../../util/reply";
 
-const command: Command = {
+const command: SlashCommand = {
   command: new SlashCommandBuilder()
     .setName("remove-subcategorie")
     .setDescription("Verwijdert een subcategorie met alle bijbehorende logs")
@@ -32,10 +33,7 @@ const command: Command = {
     const logbookChannel = await checkGuildOk(interaction);
 
     if (!logbookChannel) {
-      await interaction.reply({
-        content: "Logboek kanaal is nog niet ingesteld!",
-        ephemeral: true,
-      });
+      await reply(interaction, "Logboek kanaal is nog niet ingesteld!");
       return;
     }
 
@@ -50,13 +48,14 @@ const command: Command = {
       .where(
         and(
           eq(subcategories.guild, interaction.guildId),
-          eq(subcategories.id, result.subcategory.id)
-        )
+          eq(subcategories.id, result.subcategory.id),
+        ),
       );
 
-    await interaction.reply({
-      content: `Subcategorie ${result.subcategory.name} (${result.subcategory.value}) is succesvol verwijderd!`,
-    });
+    await reply(
+      interaction,
+      `Subcategorie ${result.subcategory.name} (${result.subcategory.value}) is succesvol verwijderd!`,
+    );
 
     await mutateScoreboard(interaction.client, interaction.guildId);
   },

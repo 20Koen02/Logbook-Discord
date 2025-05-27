@@ -3,14 +3,15 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
-import { Command } from "../../types";
+import { SlashCommand } from "../../types";
 import { capitalize, toKebabCase } from "../../util/util";
 import { and, eq } from "drizzle-orm";
 import { checkGuildOk } from "../../util/check-guild";
 import { categories, subcategories } from "../../db/schema";
 import { mutateScoreboard } from "../../util/scoreboard-utils";
+import { reply } from "../../util/reply";
 
-const command: Command = {
+const command: SlashCommand = {
   command: new SlashCommandBuilder()
     .setName("add-categorie")
     .setDescription("Voeg een categorie en subcategorie toe aan het logboek")
@@ -21,13 +22,13 @@ const command: Command = {
         .setName("categorie")
         .setDescription("Categorie van de gebeurtenis")
         .setRequired(true)
-        .setAutocomplete(true)
+        .setAutocomplete(true),
     )
     .addStringOption((option) =>
       option
         .setName("subcategorie")
         .setDescription("Subcategorie van de gebeurtenis")
-        .setRequired(true)
+        .setRequired(true),
     ),
   autocomplete: async (interaction) => {
     const focusedValue = interaction.options.getFocused();
@@ -38,18 +39,15 @@ const command: Command = {
       .where(eq(categories.guild, interaction.guildId));
 
     const filtered = choices.filter((choice) =>
-      choice.name.startsWith(focusedValue)
+      choice.name.startsWith(focusedValue),
     );
     await interaction.respond(
-      filtered.map((choice) => ({ name: choice.name, value: choice.id }))
+      filtered.map((choice) => ({ name: choice.name, value: choice.id })),
     );
   },
   execute: async (interaction) => {
     if (!(await checkGuildOk(interaction))) {
-      await interaction.reply({
-        content: "Logboek kanaal is nog niet ingesteld!",
-        ephemeral: true,
-      });
+      await reply(interaction, "Logboek kanaal is nog niet ingesteld!");
       return;
     }
 
@@ -65,8 +63,8 @@ const command: Command = {
       .where(
         and(
           eq(categories.guild, interaction.guildId),
-          eq(categories.id, category)
-        )
+          eq(categories.id, category),
+        ),
       );
 
     if (categoriesResult.length === 0) {
@@ -80,11 +78,10 @@ const command: Command = {
           })
           .returning();
       } catch {
-        await interaction.reply({
-          content:
-            "Er is een fout opgetreden bij het toevoegen van de categorie!",
-          ephemeral: true,
-        });
+        await reply(
+          interaction,
+          "Er is een fout opgetreden bij het toevoegen van de categorie!",
+        );
         return;
       }
 
@@ -108,11 +105,10 @@ const command: Command = {
         })
         .returning();
     } catch {
-      await interaction.reply({
-        content:
-          "Er is een fout opgetreden bij het toevoegen van de subcategorie!",
-        ephemeral: true,
-      });
+      await reply(
+        interaction,
+        "Er is een fout opgetreden bij het toevoegen van de subcategorie!",
+      );
       return;
     }
 
@@ -121,7 +117,7 @@ const command: Command = {
       : "";
     message += `De subcategorie ${subcategoryName} (${subcategoryValue}) is toegevoegd aan de categorie ${categoriesResult[0].name} (${categoriesResult[0].value})`;
 
-    await interaction.reply(message);
+    await reply(interaction, message);
     await mutateScoreboard(interaction.client, interaction.guildId);
   },
 };

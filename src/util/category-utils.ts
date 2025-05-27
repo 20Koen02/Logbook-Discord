@@ -14,7 +14,9 @@ import {
   ComponentType,
   AutocompleteInteraction,
   CacheType,
+  MessageFlags,
 } from "discord.js";
+import { reply } from "./reply";
 
 export const executeGetCategoryAndSubcategory = async (
   interaction: ChatInputCommandInteraction,
@@ -26,10 +28,7 @@ export const executeGetCategoryAndSubcategory = async (
   if (search) {
     const subcategoryResult = await getSubcategoryById(interaction, search);
     if (subcategoryResult.length === 0) {
-      await interaction.reply({
-        content: "Subcategorie niet gevonden!",
-        ephemeral: true,
-      });
+      await reply(interaction, "Subcategorie niet gevonden!");
       return;
     }
     subcategory = subcategoryResult[0];
@@ -41,18 +40,12 @@ export const executeGetCategoryAndSubcategory = async (
   } else {
     category = await askCategory(interaction);
     if (!category) {
-      await interaction.followUp({
-        content: "Categorie niet gevonden!",
-        ephemeral: true,
-      });
+      await reply(interaction, "Categorie niet gevonden!");
       return;
     }
     subcategory = await askSubcategory(interaction, category);
     if (!subcategory) {
-      await interaction.followUp({
-        content: "Subcategorie niet gevonden!",
-        ephemeral: true,
-      });
+      await reply(interaction, "Subcategorie niet gevonden!");
       return;
     }
   }
@@ -136,7 +129,7 @@ export const askCategory = async (interaction: ChatInputCommandInteraction) => {
   const categoryReply = await interaction.reply({
     content: "Onder welke categorie wil je deze gebeurtenis toevoegen?",
     components: [categoryRow],
-    ephemeral: true,
+    flags: MessageFlags.Ephemeral,
   });
 
   let categoryConfirmation: StringSelectMenuInteraction;
@@ -155,7 +148,7 @@ export const askCategory = async (interaction: ChatInputCommandInteraction) => {
     await interaction.followUp({
       content: "Je hebt niet binnen een minuut gekozen. Probeer het opnieuw.",
       components: [],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -200,7 +193,7 @@ export const askSubcategory = async (
   const subcategoryReply = await interaction.followUp({
     content: "Onder welke subcategorie wil je deze gebeurtenis toevoegen?",
     components: [subcategoryRow],
-    ephemeral: true,
+    flags: MessageFlags.Ephemeral,
   });
 
   let subcategoryConfirmation: StringSelectMenuInteraction;
@@ -220,7 +213,7 @@ export const askSubcategory = async (
     await interaction.followUp({
       content: "Je hebt niet binnen een minuut gekozen. Probeer het opnieuw.",
       components: [],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }

@@ -1,8 +1,12 @@
-import { InteractionContextType, SlashCommandBuilder } from "discord.js";
-import { Command } from "../../types";
+import {
+  InteractionContextType,
+  MessageFlags,
+  SlashCommandBuilder,
+} from "discord.js";
+import { SlashCommand } from "../../types";
 import { generateScoreboardEmbed } from "../../util/scoreboard-utils";
 
-const command: Command = {
+const command: SlashCommand = {
   command: new SlashCommandBuilder()
     .setName("scorebord")
     .setDescription("Lijst van alle categorieën met de totale score")
@@ -13,7 +17,7 @@ const command: Command = {
       interaction.client,
       interaction.guildId,
     );
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+    await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
   },
 };
 

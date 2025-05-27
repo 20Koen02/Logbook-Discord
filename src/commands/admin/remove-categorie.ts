@@ -5,15 +5,16 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
-import { Command } from "../../types";
+import { SlashCommand } from "../../types";
 import { categories, subcategories } from "../../db/schema";
 import { checkGuildOk } from "../../util/check-guild";
 import { and, eq } from "drizzle-orm";
 import { capitalize, toKebabCase } from "../../util/util";
 import { stripIndents } from "common-tags";
 import { mutateScoreboard } from "../../util/scoreboard-utils";
+import { reply } from "../../util/reply";
 
-const command: Command = {
+const command: SlashCommand = {
   command: new SlashCommandBuilder()
     .setName("remove-categorie")
     .setDescription("Verwijdert een categorie als deze leeg is")
@@ -24,7 +25,7 @@ const command: Command = {
         .setName("categorie")
         .setDescription("Categorie van de gebeurtenis")
         .setRequired(true)
-        .setAutocomplete(true)
+        .setAutocomplete(true),
     ),
   autocomplete: async (interaction) => {
     const focusedValue = interaction.options.getFocused();
@@ -35,18 +36,15 @@ const command: Command = {
       .where(eq(categories.guild, interaction.guildId));
 
     const filtered = choices.filter((choice) =>
-      choice.name.startsWith(focusedValue)
+      choice.name.startsWith(focusedValue),
     );
     await interaction.respond(
-      filtered.map((choice) => ({ name: choice.name, value: choice.id }))
+      filtered.map((choice) => ({ name: choice.name, value: choice.id })),
     );
   },
   execute: async (interaction) => {
     if (!(await checkGuildOk(interaction))) {
-      await interaction.reply({
-        content: "Logboek kanaal is nog niet ingesteld!",
-        ephemeral: true,
-      });
+      await reply(interaction, "Logboek kanaal is nog niet ingesteld!");
       return;
     }
 
@@ -60,15 +58,15 @@ const command: Command = {
       .where(
         and(
           eq(categories.guild, interaction.guildId),
-          eq(categories.id, category)
-        )
+          eq(categories.id, category),
+        ),
       );
 
     if (!categoriesResult.length) {
-      await interaction.reply({
-        content: `Categorie ${categoryName} (${categoryValue}) bestaat niet!`,
-        ephemeral: true,
-      });
+      await reply(
+        interaction,
+        `Categorie ${categoryName} (${categoryValue}) bestaat niet!`,
+      );
       return;
     }
 
@@ -78,16 +76,16 @@ const command: Command = {
       .where(
         and(
           eq(subcategories.guild, interaction.guildId),
-          eq(subcategories.category, categoriesResult[0].id)
-        )
+          eq(subcategories.category, categoriesResult[0].id),
+        ),
       );
 
     if (subcategoriesResult.length) {
-      await interaction.reply({
-        content: stripIndents`Categorie ${categoriesResult[0].name} (${categoriesResult[0].value}) heeft nog gekoppelde subcategorieën! 
+      await reply(
+        interaction,
+        stripIndents`Categorie ${categoriesResult[0].name} (${categoriesResult[0].value}) heeft nog gekoppelde subcategorieën! 
         Verwijder eerst de subcategorie(ën) \`${subcategoriesResult.map((subcategory) => subcategory.name).join(", ")}\` voordat je de categorie verwijdert.`,
-        ephemeral: true,
-      });
+      );
       return;
     } else {
       await interaction.client.db
@@ -95,13 +93,14 @@ const command: Command = {
         .where(
           and(
             eq(categories.guild, interaction.guildId),
-            eq(categories.id, categoriesResult[0].id)
-          )
+            eq(categories.id, categoriesResult[0].id),
+          ),
         );
 
-      await interaction.reply({
-        content: `Categorie ${categoriesResult[0].name} (${categoriesResult[0].value}) is succesvol verwijderd!`,
-      });
+      await reply(
+        interaction,
+        `Categorie ${categoriesResult[0].name} (${categoriesResult[0].value}) is succesvol verwijderd!`,
+      );
 
       await mutateScoreboard(interaction.client, interaction.guildId);
     }

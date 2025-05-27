@@ -29,7 +29,7 @@ export const logs = sqliteTable("logs", {
   amount: integer().notNull(), // subcategory.unit is de eenheid
   reason: text().notNull(), // reason (bijv. met message link)
 
-  log_message: text().notNull(), // discord message id
+  log_message: text().notNull().unique(), // discord message id
 
   added_by: text().notNull(), // discord user id
 

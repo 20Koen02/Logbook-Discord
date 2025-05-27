@@ -1,20 +1,20 @@
-import { SlashCommandBuilder } from "discord.js";
-import { Command } from "../../types";
+import { MessageFlags, SlashCommandBuilder } from "discord.js";
+import { SlashCommand } from "../../types";
 import { stripIndents } from "common-tags";
 
-const command: Command = {
+const command: SlashCommand = {
   command: new SlashCommandBuilder()
     .setName("ping")
     .setDescription("Ping the bot"),
   execute: async (interaction) => {
     const sent = await interaction.reply({
       content: "Ping?",
-      fetchReply: true,
-      ephemeral: true,
+      withResponse: true,
+      flags: MessageFlags.Ephemeral,
     });
     interaction.editReply(stripIndents`
       🏓 Pong!
-      Roundtrip: ${sent.createdTimestamp - interaction.createdTimestamp} ms
+      Roundtrip: ${sent.resource.message.createdTimestamp - interaction.createdTimestamp} ms
       `);
   },
 };

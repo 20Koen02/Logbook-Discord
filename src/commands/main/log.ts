@@ -3,7 +3,7 @@ import {
   InteractionContextType,
   SlashCommandBuilder,
 } from "discord.js";
-import { Command } from "../../types";
+import { SlashCommand } from "../../types";
 import { logs } from "../../db/schema";
 import { checkGuildOk } from "../../util/check-guild";
 import { color, createId, getThemeColor } from "../../util/util";
@@ -13,8 +13,9 @@ import {
   executeGetCategoryAndSubcategory,
 } from "../../util/category-utils";
 import { stripIndents } from "common-tags";
+import { reply } from "../../util/reply";
 
-const command: Command = {
+const command: SlashCommand = {
   command: new SlashCommandBuilder()
     .setName("log")
     .setDescription("Voeg een gebeurtenis toe aan het logboek")
@@ -23,30 +24,27 @@ const command: Command = {
       option
         .setName("bewijs")
         .setDescription("Bijvoorbeeld de reden of een Message Link")
-        .setRequired(true)
+        .setRequired(true),
     )
     .addNumberOption((option) =>
       option
         .setName("aantal")
         .setDescription("Hoeveel moet ik aan het logboek toevoegen?")
         .setRequired(true)
-        .setMinValue(1)
+        .setMinValue(1),
     )
     .addStringOption((option) =>
       option
         .setName("zoeken")
         .setDescription("Zoek de subcategorie van de gebeurtenis")
-        .setAutocomplete(true)
+        .setAutocomplete(true),
     ),
   autocomplete: searchAutocomplete,
   execute: async (interaction) => {
     const logbookChannel = await checkGuildOk(interaction);
 
     if (!logbookChannel) {
-      await interaction.reply({
-        content: "Logboek kanaal is nog niet ingesteld!",
-        ephemeral: true,
-      });
+      await reply(interaction, "Logboek kanaal is nog niet ingesteld!");
       return;
     }
 
@@ -57,8 +55,8 @@ const command: Command = {
     console.log(
       color(
         "text",
-        `User ${color("variable", interaction.user.username)} (${interaction.user.id}) executed log command (reason: ${color("variable", reason)}, amount: ${color("variable", amount)}, search: ${color("variable", search)}) in guild ${color("variable", interaction.guildId)}`
-      )
+        `User ${color("variable", interaction.user.username)} (${interaction.user.id}) executed log command (reason: ${color("variable", reason)}, amount: ${color("variable", amount)}, search: ${color("variable", search)}) in guild ${color("variable", interaction.guildId)}`,
+      ),
     );
 
     const result = await executeGetCategoryAndSubcategory(interaction, search);
@@ -76,7 +74,7 @@ const command: Command = {
         .setTitle(`+${amount} ${unitFormatted}${subcategory.name}`)
         .setDescription(
           stripIndents`${reason}
-          Toegevoegd door ${interaction.user}`
+          Toegevoegd door ${interaction.user}`,
         )
         .setFooter({
           text: `${category.name} › ${subcategory.name}`,
@@ -101,30 +99,16 @@ const command: Command = {
         })
         .returning();
     } catch {
-      const errMsg = {
-        content:
-          "Er is een fout opgetreden bij het toevoegen van de gebeurtenis!",
-        ephemeral: true,
-      };
-      if (interaction.replied || interaction.deferred) {
-        await interaction.followUp(errMsg);
-      } else {
-        await interaction.reply(errMsg);
-      }
+      await reply(
+        interaction,
+        "Er is een fout opgetreden bij het toevoegen van de gebeurtenis!",
+      );
       return;
     }
 
     await mutateScoreboard(interaction.client, interaction.guildId);
 
-    const successMsg = {
-      content: `Gebeurtenis toegevoegd in ${logbookChannel}!`,
-      ephemeral: true,
-    };
-    if (interaction.replied || interaction.deferred) {
-      await interaction.followUp(successMsg);
-    } else {
-      await interaction.reply(successMsg);
-    }
+    await reply(interaction, `Gebeurtenis toegevoegd in ${logbookChannel}!`);
   },
 };
 

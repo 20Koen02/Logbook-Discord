@@ -5,13 +5,23 @@ import {
   ClientEvents,
   Collection,
   SharedSlashCommand,
+  MessageContextMenuCommandInteraction,
 } from "discord.js";
 import { drizzle } from "drizzle-orm/libsql";
 
-export interface Command {
+type Command = SlashCommand & ContextMenuCommand;
+
+export interface SlashCommand {
   command: SharedSlashCommand;
   execute: (interaction: ChatInputCommandInteraction) => Awaitable<void>;
   autocomplete?: (interaction: AutocompleteInteraction) => Awaitable<void>;
+}
+
+export interface ContextMenuCommand {
+  command: ContextMenuCommandBuilder;
+  execute: (
+    interaction: MessageContextMenuCommandInteraction,
+  ) => Awaitable<void>;
 }
 
 export interface BotEvent {
