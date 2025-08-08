@@ -27,14 +27,13 @@ const command: SlashCommand = {
       .orderBy(desc(count(logs.amount)))
       .limit(10);
 
-    const topLoggersUsers = await Promise.all(
-      topLoggers.map(async (logger) => {
-        return {
-          user: await interaction.client.users.fetch(logger.added_by),
-          event_count: logger.event_count,
-        };
-      }),
-    );
+    if (topLoggers.length === 0) {
+      await interaction.reply({
+        content: "Er zijn nog geen logs.",
+        ephemeral: true,
+      });
+      return;
+    }
 
     const getMedal = (rank: number) => {
       if (rank === 0) return "🥇";
@@ -43,6 +42,10 @@ const command: SlashCommand = {
       return "";
     };
 
+    const lines = topLoggers.map((row, i) =>
+      `${i + 1}. <@${row.added_by}> ${row.event_count} logs ${getMedal(i)}`.trim(),
+    );
+
     const embed = new EmbedBuilder()
       .setColor(getThemeColor("primary"))
       .setTitle("Top Loggers")
@@ -50,11 +53,7 @@ const command: SlashCommand = {
         stripIndents`
         De top 10 mensen die het vaakst hebben gelogd
 
-        ${topLoggersUsers
-          .map((logger, i) => {
-            return `${i + 1}. ${logger.user} ${logger.event_count} logs ${getMedal(i)}`;
-          })
-          .join("\n")}
+        ${lines.join("\n")}
       `,
       );
 

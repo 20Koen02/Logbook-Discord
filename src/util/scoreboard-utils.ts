@@ -25,36 +25,42 @@ export async function generateScoreboardEmbed(
     .leftJoin(logs, eq(subcategories.id, logs.subcategory))
     .groupBy(subcategories.category, subcategories.name);
 
-  const longestSubcategoryNameLength = result.reduce((acc, subcategory) => {
-    return Math.max(acc, subcategory.subcategory?.length || 0);
-  }, 0);
+  const categoryMap = new Map<
+    string,
+    { subcategory: string; amount: number | null }[]
+  >();
+  let longestSubcategoryNameLength = 0;
+  for (const row of result) {
+    if (!row.subcategory) continue;
+    if (row.subcategory.length > longestSubcategoryNameLength)
+      longestSubcategoryNameLength = row.subcategory.length;
+    const list = categoryMap.get(row.category) || [];
+    const amount = row.amount == null ? null : Number(row.amount);
+    list.push({ subcategory: row.subcategory, amount });
+    categoryMap.set(row.category, list);
+  }
 
   const embed = new EmbedBuilder()
     .setColor(getThemeColor("primary"))
     .setTitle("Stand Scoreboard Logboek");
 
   for (const categoryName of categoryNames) {
-    const subcategoriesFiltered = result.filter(
-      (subcategory) =>
-        subcategory.subcategory && subcategory.category === categoryName.name,
-    );
+    const subcategoriesForCategory = categoryMap.get(categoryName.name);
+    if (!subcategoriesForCategory || !subcategoriesForCategory.length) continue;
 
-    if (!subcategoriesFiltered.length) continue;
-
-    embed.addFields({
-      name: categoryName.name,
-      value: stripIndents`\`\`\`py
-        ${subcategoriesFiltered
-          .map((subcategory) => {
-            const spaces = " ".repeat(
-              longestSubcategoryNameLength -
-                (subcategory.subcategory?.length || 0) +
-                3,
-            );
-            return `${subcategory.subcategory}:${spaces}${subcategory.amount || 0}`;
+    const value = stripIndents`\`\`\`py
+        ${subcategoriesForCategory
+          .map((sc) => {
+            const line =
+              (sc.subcategory + ":").padEnd(
+                longestSubcategoryNameLength + 4,
+                " ",
+              ) + (sc.amount || 0);
+            return line;
           })
-          .join("\n")}\`\`\``,
-    });
+          .join("\n")}\`\`\``;
+
+    embed.addFields({ name: categoryName.name, value });
   }
 
   return embed;
@@ -66,25 +72,24 @@ export async function mutateScoreboard(client: Client, guildId: string) {
     .from(guilds)
     .where(eq(guilds.id, guildId));
 
-  if (
-    !guildsResult.length ||
-    !guildsResult[0].scoreboard_message ||
-    !guildsResult[0].log_channel
-  )
-    return;
+  if (!guildsResult.length) return;
+  const { scoreboard_message, log_channel } = guildsResult[0];
+  if (!scoreboard_message || !log_channel) return;
 
-  const channel = await client.channels.fetch(guildsResult[0].log_channel);
+  const channel = await client.channels.fetch(log_channel);
+  if (!channel || !channel.isSendable()) return;
 
-  if (!channel) return;
+  const embedPromise = generateScoreboardEmbed(client, guildId);
+  const messagePromise = channel.messages
+    .fetch(scoreboard_message)
+    .catch(() => null);
 
-  if (!channel.isSendable()) return;
-
-  const scoreboardMessage = await channel.messages.fetch(
-    guildsResult[0].scoreboard_message,
-  );
+  const [embed, scoreboardMessage] = await Promise.all([
+    embedPromise,
+    messagePromise,
+  ]);
 
   if (!scoreboardMessage) return;
 
-  const embed = await generateScoreboardEmbed(client, guildId);
   await scoreboardMessage.edit({ embeds: [embed] });
 }
