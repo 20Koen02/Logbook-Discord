@@ -1,0 +1,10 @@
+.git
+node_modules
+.idea
+.vscode
+coverage
+dist
+*.log
+
+local.db
+production.db
