@@ -98,7 +98,8 @@ const command: SlashCommand = {
           log_message: logMessage.id,
         })
         .returning();
-    } catch {
+    } catch (e) {
+      console.log(e) // smort
       await reply(
         interaction,
         "Er is een fout opgetreden bij het toevoegen van de gebeurtenis!",
