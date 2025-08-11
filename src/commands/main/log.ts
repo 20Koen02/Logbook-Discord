@@ -99,7 +99,7 @@ const command: SlashCommand = {
         })
         .returning();
     } catch (e) {
-      console.log(e) // smort
+      console.log(e) // todo: fix
       await reply(
         interaction,
         "Er is een fout opgetreden bij het toevoegen van de gebeurtenis!",

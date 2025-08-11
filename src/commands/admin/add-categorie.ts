@@ -77,7 +77,8 @@ const command: SlashCommand = {
             name: categoryName,
           })
           .returning();
-      } catch {
+      } catch (e) {
+        console.log(e); // todo: fix
         await reply(
           interaction,
           "Er is een fout opgetreden bij het toevoegen van de categorie!",
@@ -104,7 +105,8 @@ const command: SlashCommand = {
           name: subcategoryName,
         })
         .returning();
-    } catch {
+    } catch (e) {
+      console.log(e); // todo: fix
       await reply(
         interaction,
         "Er is een fout opgetreden bij het toevoegen van de subcategorie!",

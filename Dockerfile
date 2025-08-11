@@ -52,9 +52,6 @@ FROM node:22-alpine AS runtime
 WORKDIR /usr/src/app
 ENV NODE_ENV=production
 
-# Create non-root user (node) and use it
-USER node
-
 # Only what's needed to run
 COPY --chown=node:node --from=prod-deps /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=builder   /usr/src/app/dist         ./dist
