@@ -13,7 +13,7 @@ RUN corepack enable
 FROM base AS deps
 
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn/ .yarn/
+# COPY .yarn/ .yarn/
 
 # Use BuildKit cache for Yarn's global cache
 RUN --mount=type=cache,id=yarn-cache,target=/usr/local/share/.cache/yarn \
@@ -39,7 +39,7 @@ ENV NODE_ENV=production
 
 # Copy manifests and yarn metadata
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn/ .yarn/
+# COPY .yarn/ .yarn/
 
 # Production-only install (no scripts re-run thanks to skip-build)
 RUN --mount=type=cache,id=yarn-cache,target=/usr/local/share/.cache/yarn \
