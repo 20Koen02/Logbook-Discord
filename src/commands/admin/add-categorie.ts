@@ -10,6 +10,7 @@ import { checkGuildOk } from "../../util/check-guild";
 import { categories, subcategories } from "../../db/schema";
 import { mutateScoreboard } from "../../util/scoreboard-utils";
 import { reply } from "../../util/reply";
+import { logger } from "../../logger";
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()
@@ -78,7 +79,7 @@ const command: SlashCommand = {
           })
           .returning();
       } catch (e) {
-        console.log(e); // todo: fix
+        logger.error("Error adding category", e);
         await reply(
           interaction,
           "Er is een fout opgetreden bij het toevoegen van de categorie!",
@@ -106,7 +107,7 @@ const command: SlashCommand = {
         })
         .returning();
     } catch (e) {
-      console.log(e); // todo: fix
+      logger.error("Error adding subcategory", e);
       await reply(
         interaction,
         "Er is een fout opgetreden bij het toevoegen van de subcategorie!",

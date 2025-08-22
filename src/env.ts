@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { z } from "zod";
-import { color } from "./util/util";
+import { logger } from "./logger";
 
 const envVariables = z.object({
   TOKEN: z.string(),
@@ -10,14 +10,6 @@ const envVariables = z.object({
 
 const env = envVariables.parse(process.env);
 
-console.log(
-  color(
-    "text",
-    `💾 Loaded ${color(
-      "variable",
-      Object.keys(env).length,
-    )} environment variable(s)`,
-  ),
-);
+logger.info(`Loaded ${Object.keys(env).length} environment variable(s)`);
 
 export default env;

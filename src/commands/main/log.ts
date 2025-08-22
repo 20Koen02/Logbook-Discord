@@ -6,7 +6,7 @@ import {
 import { SlashCommand } from "../../types";
 import { logs } from "../../db/schema";
 import { checkGuildOk } from "../../util/check-guild";
-import { color, createId, getThemeColor } from "../../util/util";
+import { getThemeColor } from "../../util/util";
 import { mutateScoreboard } from "../../util/scoreboard-utils";
 import {
   searchAutocomplete,
@@ -14,6 +14,7 @@ import {
 } from "../../util/category-utils";
 import { stripIndents } from "common-tags";
 import { reply } from "../../util/reply";
+import { logger } from "../../logger";
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()
@@ -49,28 +50,69 @@ const command: SlashCommand = {
     }
 
     const reason = interaction.options.getString("bewijs");
-    const amount = interaction.options.getNumber("aantal");
+    let amount = interaction.options.getNumber("aantal");
     const search = interaction.options.getString("zoeken");
 
-    console.log(
-      color(
-        "text",
-        `User ${color("variable", interaction.user.username)} (${interaction.user.id}) executed log command (reason: ${color("variable", reason)}, amount: ${color("variable", amount)}, search: ${color("variable", search)}) in guild ${color("variable", interaction.guildId)}`,
-      ),
-    );
+    if (["[object Object]", "undefined", "null", "NaN", ""].includes(reason)) {
+      await reply(
+        interaction,
+        "Geef een geldige reden op (stop fucking around)",
+      );
+      return;
+    }
+
+    if (reason.length > 1000) {
+      await reply(
+        interaction,
+        "Geef een geldige reden op (maximaal 1000 tekens)",
+      );
+      return;
+    }
+
+    if (!Number.isFinite(amount)) {
+      await reply(interaction, "Geef een geldig aantal op");
+      return;
+    }
+
+    amount = Math.floor(amount);
+
+    if (amount < 1 || amount > 1_000_000_000) {
+      await reply(interaction, "Geef een geldig aantal op");
+      return;
+    }
+
+    logger.info(`User ${interaction.user.username} executed log command`, {
+      reason,
+      amount,
+      search,
+      user: interaction.user.username,
+      userId: interaction.user.id,
+      guild: interaction.guildId,
+      guildName: interaction.guild.name,
+    });
 
     const result = await executeGetCategoryAndSubcategory(interaction, search);
-
     if (!result) return;
 
     const { category, subcategory } = result;
 
-    const logId = createId();
+    logger.info(`Adding log entry`, {
+      reason,
+      amount,
+      user: interaction.user.username,
+      userId: interaction.user.id,
+      categoryId: category.id,
+      category: category.name,
+      subcategoryId: subcategory.id,
+      subcategory: subcategory.name,
+      guildId: interaction.guildId,
+      guild: interaction.guild.name,
+    });
 
     try {
       const unitFormatted = subcategory.unit ? subcategory.unit + " " : "";
       const embed = new EmbedBuilder()
-        .setColor(getThemeColor("primary"))
+        .setColor(getThemeColor())
         .setTitle(`+${amount} ${unitFormatted}${subcategory.name}`)
         .setDescription(
           stripIndents`${reason}
@@ -88,7 +130,6 @@ const command: SlashCommand = {
       await interaction.client.db
         .insert(logs)
         .values({
-          id: logId,
           guild: interaction.guildId,
           category: category.id,
           subcategory: subcategory.id,
@@ -99,7 +140,7 @@ const command: SlashCommand = {
         })
         .returning();
     } catch (e) {
-      console.log(e) // todo: fix
+      logger.error("Error adding log entry", e);
       await reply(
         interaction,
         "Er is een fout opgetreden bij het toevoegen van de gebeurtenis!",

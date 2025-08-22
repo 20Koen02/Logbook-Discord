@@ -47,7 +47,7 @@ const command: SlashCommand = {
     );
 
     const embed = new EmbedBuilder()
-      .setColor(getThemeColor("primary"))
+      .setColor(getThemeColor())
       .setTitle("Top Loggers")
       .setDescription(
         stripIndents`

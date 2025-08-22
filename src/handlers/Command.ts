@@ -2,8 +2,8 @@ import { Client, REST, Routes } from "discord.js";
 import { readdir } from "fs/promises";
 import { join } from "path";
 import { Command } from "../types";
-import { color } from "../util/util";
 import env from "../env";
+import { logger } from "../logger";
 
 const command = async (client: Client) => {
   const commandsDir = join(__dirname, "../commands");
@@ -19,12 +19,7 @@ const command = async (client: Client) => {
           ).default;
 
           client.commands.set(command.command.name, command);
-          console.log(
-            color(
-              "text",
-              `📜 Loaded command ${color("variable", command.command.name)}`,
-            ),
-          );
+          logger.info(`Loaded command ${command.command.name}`);
         }),
       );
     }),
@@ -37,18 +32,10 @@ const command = async (client: Client) => {
       body: client.commands.map((c) => c.command.toJSON()),
     })
     .then((data) => {
-      console.log(
-        color(
-          "text",
-          `🔥 Registered ${color(
-            "variable",
-            (data as object[]).length,
-          )} command(s)`,
-        ),
-      );
+      logger.info(`Registered ${(data as object[]).length} command(s)`);
     })
     .catch((e) => {
-      console.log(e);
+      logger.error("Error registering commands", e);
     });
 };
 

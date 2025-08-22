@@ -1,17 +1,15 @@
 import { ShardingManager } from "discord.js";
 import env from "./env";
-import { color } from "./util/util";
+import { logger } from "./logger";
 
 const manager = new ShardingManager("dist/src/bot.js", {
   token: env.TOKEN,
 });
 
 manager.on("shardCreate", (shard) =>
-  console.log(
-    color("primary", `💎 Registered Shard ${color("variable", shard.id)}`),
-  ),
+  logger.info(`Registered Shard ${shard.id}`),
 );
 
 manager.spawn().then(() => {
-  console.log(color("primary", "🚀 Shards are now running"));
+  logger.info("Shards are now running");
 });

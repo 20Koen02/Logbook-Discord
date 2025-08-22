@@ -10,3 +10,4 @@ services:
     volumes:
       - ./.env:/usr/src/app/.env
       - ./production.db:/usr/src/app/production.db
+      - ./logs:/usr/src/app/logs

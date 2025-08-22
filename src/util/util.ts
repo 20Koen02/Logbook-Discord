@@ -1,26 +1,11 @@
-import chalk from "chalk";
-
 import { init } from "@paralleldrive/cuid2";
 
 export const createId = init({
   length: 10,
 });
 
-const themeColors = {
-  primary: "#f89b29",
-  text: "#ff8e4d",
-  variable: "#ff624d",
-  error: "#f5426c",
-};
-
-type colorType = keyof typeof themeColors;
-
-export const getThemeColor = (color: colorType) =>
-  Number(`0x${themeColors[color].substring(1)}`);
-
-export const color = (color: colorType, message: unknown) => {
-  return chalk.hex(themeColors[color])(message);
-};
+export const getThemeColor = () =>
+  Number(`0xf89b29`);
 
 export const toKebabCase = (input: string) => {
   return input

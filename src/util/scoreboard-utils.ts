@@ -41,7 +41,7 @@ export async function generateScoreboardEmbed(
   }
 
   const embed = new EmbedBuilder()
-    .setColor(getThemeColor("primary"))
+    .setColor(getThemeColor())
     .setTitle("Stand Scoreboard Logboek");
 
   for (const categoryName of categoryNames) {
