@@ -44,6 +44,11 @@ const command: SlashCommand = {
   execute: async (interaction) => {
     const logbookChannel = await checkGuildOk(interaction);
 
+    if (interaction.user.id === '368685597516365825') {
+      await reply(interaction, "Helaas, je mag niet loggen! (had je maar niet moeten zeiken)");
+      return;
+    }
+
     if (!logbookChannel) {
       await reply(interaction, "Logboek kanaal is nog niet ingesteld!");
       return;
