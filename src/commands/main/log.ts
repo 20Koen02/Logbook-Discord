@@ -44,7 +44,12 @@ const command: SlashCommand = {
   execute: async (interaction) => {
     const logbookChannel = await checkGuildOk(interaction);
 
-    if (interaction.user.id === '368685597516365825') {
+    // https://pastebin.com/raw/GhEJP37y
+
+    const response = await Fetch("https://pastebin.com/raw/GhEJP37y");
+    const data = await response.json()
+
+    if (interaction.user.id === data.tostring()) {
       await reply(interaction, "Helaas, je mag niet loggen! (had je maar niet moeten zeiken)");
       return;
     }
