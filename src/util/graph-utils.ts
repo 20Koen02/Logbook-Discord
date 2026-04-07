@@ -68,6 +68,23 @@ const toCumulativeGraphData = (data: GraphRow[]): GraphPoint[] => {
   });
 };
 
+const toSteppedLineGraphData = (data: GraphRow[]): GraphPoint[] => {
+  const cumulativeData = toCumulativeGraphData(data);
+  const [firstPoint] = cumulativeData;
+
+  if (!firstPoint) {
+    return cumulativeData;
+  }
+
+  return [
+    {
+      amount: 0,
+      date: firstPoint.date,
+    },
+    ...cumulativeData,
+  ];
+};
+
 const createGraphSpec = (
   data: GraphRow[],
   categoryName: string,
@@ -99,22 +116,36 @@ const createGraphSpec = (
       subtitlePadding: 8,
       offset: 16,
     },
-    data: {
-      values: toCumulativeGraphData(data),
-    },
-    mark: {
-      type: "line",
-      interpolate: "monotone",
-      color: colors.accent,
-      strokeWidth: 6,
-      point: {
-        filled: true,
-        fill: colors.accent,
-        stroke: colors.background,
-        strokeWidth: 2,
-        size: 300,
+    layer: [
+      {
+        data: {
+          values: toSteppedLineGraphData(data),
+        },
+        mark: {
+          type: "line",
+          interpolate: "step-after",
+          color: colors.accent,
+          strokeWidth: 6,
+        },
       },
-    },
+      {
+        data: {
+          values: toCumulativeGraphData(data),
+        },
+        mark: {
+          type: "point",
+          filled: true,
+          fill: colors.accent,
+          fillOpacity: 1,
+          stroke: colors.background,
+          strokeOpacity: 1,
+          strokeWidth: 2,
+          size: 200,
+          color: colors.accent,
+          opacity: 1,
+        },
+      },
+    ],
     encoding: {
       x: {
         field: "date",
