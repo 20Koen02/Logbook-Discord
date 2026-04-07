@@ -3,7 +3,7 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
-import { SlashCommand } from "../../types";
+import type { SlashCommand } from "../../types";
 import { capitalize, toKebabCase } from "../../util/util";
 import { and, eq } from "drizzle-orm";
 import { checkGuildOk } from "../../util/check-guild";
@@ -37,7 +37,7 @@ const command: SlashCommand = {
     const choices = await interaction.client.db
       .select()
       .from(categories)
-      .where(eq(categories.guild, interaction.guildId));
+      .where(eq(categories.guild, interaction.guildId!));
 
     const filtered = choices.filter((choice) =>
       choice.name.startsWith(focusedValue),
@@ -54,7 +54,7 @@ const command: SlashCommand = {
 
     let addedCategory = false;
 
-    const category = interaction.options.getString("categorie");
+    const category = interaction.options.getString("categorie", true);
     const categoryName = capitalize(category);
     const categoryValue = toKebabCase(category);
 
@@ -63,7 +63,7 @@ const command: SlashCommand = {
       .from(categories)
       .where(
         and(
-          eq(categories.guild, interaction.guildId),
+          eq(categories.guild, interaction.guildId!),
           eq(categories.id, category),
         ),
       );
@@ -73,7 +73,7 @@ const command: SlashCommand = {
         categoriesResult = await interaction.client.db
           .insert(categories)
           .values({
-            guild: interaction.guildId,
+            guild: interaction.guildId!,
             value: categoryValue,
             name: categoryName,
           })
@@ -92,7 +92,7 @@ const command: SlashCommand = {
 
     if (categoriesResult.length === 0) return;
 
-    const subcategory = interaction.options.getString("subcategorie");
+    const subcategory = interaction.options.getString("subcategorie", true);
     const subcategoryName = capitalize(subcategory);
     const subcategoryValue = toKebabCase(subcategory);
 
@@ -100,7 +100,7 @@ const command: SlashCommand = {
       await interaction.client.db
         .insert(subcategories)
         .values({
-          guild: interaction.guildId,
+          guild: interaction.guildId!,
           category: categoriesResult[0].id,
           value: subcategoryValue,
           name: subcategoryName,
@@ -121,7 +121,7 @@ const command: SlashCommand = {
     message += `De subcategorie ${subcategoryName} (${subcategoryValue}) is toegevoegd aan de categorie ${categoriesResult[0].name} (${categoriesResult[0].value})`;
 
     await reply(interaction, message);
-    await mutateScoreboard(interaction.client, interaction.guildId);
+    await mutateScoreboard(interaction.client, interaction.guildId!);
   },
 };
 

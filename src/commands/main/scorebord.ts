@@ -3,7 +3,7 @@ import {
   MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
-import { SlashCommand } from "../../types";
+import type { SlashCommand } from "../../types";
 import { generateScoreboardEmbed } from "../../util/scoreboard-utils";
 
 const command: SlashCommand = {
@@ -15,7 +15,7 @@ const command: SlashCommand = {
   execute: async (interaction) => {
     const embed = await generateScoreboardEmbed(
       interaction.client,
-      interaction.guildId,
+      interaction.guildId!,
     );
     await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
   },

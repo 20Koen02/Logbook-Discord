@@ -3,7 +3,7 @@ import {
   InteractionContextType,
   SlashCommandBuilder,
 } from "discord.js";
-import { SlashCommand } from "../../types";
+import type { SlashCommand } from "../../types";
 import { getThemeColor } from "../../util/util";
 import { count, desc, eq } from "drizzle-orm";
 import { logs } from "../../db/schema";
@@ -22,7 +22,7 @@ const command: SlashCommand = {
         event_count: count(logs.added_by),
       })
       .from(logs)
-      .where(eq(logs.guild, interaction.guildId))
+      .where(eq(logs.guild, interaction.guildId!))
       .groupBy(logs.added_by)
       .orderBy(desc(count(logs.amount)))
       .limit(10);

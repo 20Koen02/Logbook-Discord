@@ -6,8 +6,12 @@ services:
     image: ghcr.io/20koen02/logbook-discord:latest
     platform: linux/amd64
     restart: unless-stopped
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
     volumes:
       - ./.env:/usr/src/app/.env
-      - ./production.db:/usr/src/app/production.db
+      - ./local.db:/usr/src/app/local.db
       - ./logs:/usr/src/app/logs

@@ -4,8 +4,7 @@ export const createId = init({
   length: 10,
 });
 
-export const getThemeColor = () =>
-  Number(`0xf89b29`);
+export const getThemeColor = () => Number(`0xf89b29`);
 
 export const toKebabCase = (input: string) => {
   return input

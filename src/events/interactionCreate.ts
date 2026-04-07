@@ -1,5 +1,5 @@
-import { Events, Interaction } from "discord.js";
-import { BotEvent, ContextMenuCommand, SlashCommand } from "../types";
+import { Events, type Interaction } from "discord.js";
+import type { BotEvent, ContextMenuCommand, SlashCommand } from "../types";
 import { reply } from "../util/reply";
 import { logger } from "../logger";
 
@@ -11,7 +11,7 @@ const event: BotEvent = {
     const isContextMenu = interaction.isMessageContextMenuCommand();
 
     if (isCommand) {
-      const command: SlashCommand = interaction.client.commands.get(
+      const command: SlashCommand | undefined = interaction.client.commands.get(
         interaction.commandName,
       );
       if (!command) return;
@@ -25,7 +25,7 @@ const event: BotEvent = {
         );
       }
     } else if (isAutocomplete) {
-      const command: SlashCommand = interaction.client.commands.get(
+      const command: SlashCommand | undefined = interaction.client.commands.get(
         interaction.commandName,
       );
       if (!command || !command.autocomplete) return;
@@ -35,9 +35,8 @@ const event: BotEvent = {
         logger.error("Error executing autocomplete", error);
       }
     } else if (isContextMenu) {
-      const command: ContextMenuCommand = interaction.client.commands.get(
-        interaction.commandName,
-      );
+      const command: ContextMenuCommand | undefined =
+        interaction.client.commands.get(interaction.commandName);
       if (!command) return;
       try {
         command.execute(interaction);

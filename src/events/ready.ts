@@ -1,5 +1,5 @@
 import { ActivityType, Client, Events } from "discord.js";
-import { BotEvent } from "../types";
+import type { BotEvent } from "../types";
 import { mutateScoreboard } from "../util/scoreboard-utils";
 import { logger } from "../logger";
 

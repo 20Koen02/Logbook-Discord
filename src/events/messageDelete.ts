@@ -1,10 +1,10 @@
 import {
   Events,
   Message,
-  OmitPartialGroupDMChannel,
-  PartialMessage,
+  type OmitPartialGroupDMChannel,
+  type PartialMessage,
 } from "discord.js";
-import { BotEvent } from "../types";
+import type { BotEvent } from "../types";
 import { guilds, logs } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { mutateScoreboard } from "../util/scoreboard-utils";
@@ -17,7 +17,7 @@ const event: BotEvent = {
     const guildsResult = await message.client.db
       .select()
       .from(guilds)
-      .where(eq(guilds.id, message.guildId));
+      .where(eq(guilds.id, message.guildId!));
 
     if (!guildsResult.length || !guildsResult[0].log_channel) return;
 
@@ -37,7 +37,7 @@ const event: BotEvent = {
       .returning();
 
     if (deleted.length) {
-      await mutateScoreboard(message.client, message.guildId);
+      await mutateScoreboard(message.client, message.guildId!);
     }
   },
 };

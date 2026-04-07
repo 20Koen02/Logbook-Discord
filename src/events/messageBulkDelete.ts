@@ -1,13 +1,13 @@
 import {
   Events,
-  GuildTextBasedChannel,
+  type GuildTextBasedChannel,
   Message,
-  OmitPartialGroupDMChannel,
-  PartialMessage,
-  ReadonlyCollection,
-  Snowflake,
+  type OmitPartialGroupDMChannel,
+  type PartialMessage,
+  type ReadonlyCollection,
+  type Snowflake,
 } from "discord.js";
-import { BotEvent } from "../types";
+import type { BotEvent } from "../types";
 import { guilds, logs } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { mutateScoreboard } from "../util/scoreboard-utils";

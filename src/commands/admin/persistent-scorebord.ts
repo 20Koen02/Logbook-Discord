@@ -3,7 +3,7 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
-import { SlashCommand } from "../../types";
+import type { SlashCommand } from "../../types";
 import { guilds } from "../../db/schema";
 import { generateScoreboardEmbed } from "../../util/scoreboard-utils";
 import { checkGuildOk } from "../../util/check-guild";
@@ -25,14 +25,14 @@ const command: SlashCommand = {
 
     const embed = await generateScoreboardEmbed(
       interaction.client,
-      interaction.guildId,
+      interaction.guildId!,
     );
 
     const sbMessage = await logbookChannel.send({ embeds: [embed] });
 
     await interaction.client.db
       .insert(guilds)
-      .values({ id: interaction.guildId, scoreboard_message: sbMessage.id })
+      .values({ id: interaction.guildId!, scoreboard_message: sbMessage.id })
       // if the guild already exists, update the scoreboard_message
       .onConflictDoUpdate({
         target: guilds.id,

@@ -6,7 +6,7 @@ import { Client, Collection, GatewayIntentBits } from "discord.js";
 const { Guilds, MessageContent, GuildMessages } = GatewayIntentBits;
 import { join } from "path";
 import { readdir } from "fs/promises";
-import { Command } from "./types";
+import type { Command } from "./types";
 
 const client = new Client({ intents: [Guilds, MessageContent, GuildMessages] });
 client.commands = new Collection<string, Command>();

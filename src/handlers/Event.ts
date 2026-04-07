@@ -1,6 +1,6 @@
 import { Client } from "discord.js";
 import { join } from "path";
-import { BotEvent } from "../types";
+import type { BotEvent } from "../types";
 import { readdir } from "fs/promises";
 import { logger } from "../logger";
 

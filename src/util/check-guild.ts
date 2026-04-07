@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, SendableChannels } from "discord.js";
+import { ChatInputCommandInteraction, type SendableChannels } from "discord.js";
 import { guilds } from "../db/schema";
 import { eq } from "drizzle-orm";
 
@@ -9,7 +9,7 @@ export const checkGuildOk = async (
   const guildsResult = await interaction.client.db
     .select()
     .from(guilds)
-    .where(eq(guilds.id, interaction.guildId));
+    .where(eq(guilds.id, interaction.guildId!));
 
   if (!guildsResult.length || !guildsResult[0].log_channel) return null;
 

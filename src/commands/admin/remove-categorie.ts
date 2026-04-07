@@ -5,7 +5,7 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
-import { SlashCommand } from "../../types";
+import type { SlashCommand } from "../../types";
 import { categories, subcategories } from "../../db/schema";
 import { checkGuildOk } from "../../util/check-guild";
 import { and, eq } from "drizzle-orm";
@@ -33,7 +33,7 @@ const command: SlashCommand = {
     const choices = await interaction.client.db
       .select()
       .from(categories)
-      .where(eq(categories.guild, interaction.guildId));
+      .where(eq(categories.guild, interaction.guildId!));
 
     const filtered = choices.filter((choice) =>
       choice.name.startsWith(focusedValue),
@@ -48,7 +48,7 @@ const command: SlashCommand = {
       return;
     }
 
-    const category = interaction.options.getString("categorie");
+    const category = interaction.options.getString("categorie", true);
     const categoryName = capitalize(category);
     const categoryValue = toKebabCase(category);
 
@@ -57,7 +57,7 @@ const command: SlashCommand = {
       .from(categories)
       .where(
         and(
-          eq(categories.guild, interaction.guildId),
+          eq(categories.guild, interaction.guildId!),
           eq(categories.id, category),
         ),
       );
@@ -75,7 +75,7 @@ const command: SlashCommand = {
       .from(subcategories)
       .where(
         and(
-          eq(subcategories.guild, interaction.guildId),
+          eq(subcategories.guild, interaction.guildId!),
           eq(subcategories.category, categoriesResult[0].id),
         ),
       );
@@ -92,7 +92,7 @@ const command: SlashCommand = {
         .delete(categories)
         .where(
           and(
-            eq(categories.guild, interaction.guildId),
+            eq(categories.guild, interaction.guildId!),
             eq(categories.id, categoriesResult[0].id),
           ),
         );
@@ -102,7 +102,7 @@ const command: SlashCommand = {
         `Categorie ${categoriesResult[0].name} (${categoriesResult[0].value}) is succesvol verwijderd!`,
       );
 
-      await mutateScoreboard(interaction.client, interaction.guildId);
+      await mutateScoreboard(interaction.client, interaction.guildId!);
     }
   },
 };

@@ -3,7 +3,7 @@ import {
   InteractionContextType,
   SlashCommandBuilder,
 } from "discord.js";
-import { SlashCommand } from "../../types";
+import type { SlashCommand } from "../../types";
 import { logs } from "../../db/schema";
 import { checkGuildOk } from "../../util/check-guild";
 import { getThemeColor } from "../../util/util";
@@ -49,8 +49,8 @@ const command: SlashCommand = {
       return;
     }
 
-    const reason = interaction.options.getString("bewijs");
-    let amount = interaction.options.getNumber("aantal");
+    const reason = interaction.options.getString("bewijs", true);
+    let amount = interaction.options.getNumber("aantal", true);
     const search = interaction.options.getString("zoeken");
 
     if (["[object Object]", "undefined", "null", "NaN", ""].includes(reason)) {
@@ -87,8 +87,8 @@ const command: SlashCommand = {
       search,
       user: interaction.user.username,
       userId: interaction.user.id,
-      guild: interaction.guildId,
-      guildName: interaction.guild.name,
+      guild: interaction.guildId!,
+      guildName: interaction.guild!.name,
     });
 
     const result = await executeGetCategoryAndSubcategory(interaction, search);
@@ -105,8 +105,8 @@ const command: SlashCommand = {
       category: category.name,
       subcategoryId: subcategory.id,
       subcategory: subcategory.name,
-      guildId: interaction.guildId,
-      guild: interaction.guild.name,
+      guildId: interaction.guildId!,
+      guild: interaction.guild!.name,
     });
 
     try {
@@ -120,7 +120,7 @@ const command: SlashCommand = {
         )
         .setFooter({
           text: `${category.name} › ${subcategory.name}`,
-          iconURL: interaction.user.avatarURL(),
+          iconURL: interaction.user.avatarURL() || undefined,
         });
       const logMessage = await logbookChannel.send({ embeds: [embed] });
 
@@ -130,7 +130,7 @@ const command: SlashCommand = {
       await interaction.client.db
         .insert(logs)
         .values({
-          guild: interaction.guildId,
+          guild: interaction.guildId!,
           category: category.id,
           subcategory: subcategory.id,
           amount: amount,
@@ -148,7 +148,7 @@ const command: SlashCommand = {
       return;
     }
 
-    await mutateScoreboard(interaction.client, interaction.guildId);
+    await mutateScoreboard(interaction.client, interaction.guildId!);
 
     await reply(interaction, `Gebeurtenis toegevoegd in ${logbookChannel}!`);
   },

@@ -1,11 +1,22 @@
 # syntax=docker/dockerfile:1.7
 
 ########################
-# base: node + yarn
+# base: node + system deps + yarn
 ########################
-FROM node:22-alpine AS base
+FROM node:22-slim AS base
 WORKDIR /usr/src/app
-RUN corepack enable
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+        python3 \
+        pkg-config \
+        libcairo2-dev \
+        libpango1.0-dev \
+        libjpeg-dev \
+        libgif-dev \
+        librsvg2-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && corepack enable
 
 ########################
 # deps: install once, cacheable
@@ -41,14 +52,16 @@ ENV NODE_ENV=production
 COPY package.json yarn.lock .yarnrc.yml ./
 # COPY .yarn/ .yarn/
 
-# Production-only install (no scripts re-run thanks to skip-build)
+# Production-only install.
+# Native modules like `canvas` need their install/build scripts in the runtime
+# dependency layer, otherwise Vega cannot create a headless canvas in Docker.
 RUN --mount=type=cache,id=yarn-cache,target=/usr/local/share/.cache/yarn \
-    yarn install --immutable --mode=skip-build
+    yarn install --immutable
 
 ########################
-# runtime: small, no yarn
+# runtime: production
 ########################
-FROM node:22-alpine AS runtime
+FROM base AS runtime
 WORKDIR /usr/src/app
 ENV NODE_ENV=production
 

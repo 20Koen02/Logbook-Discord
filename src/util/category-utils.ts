@@ -1,8 +1,8 @@
 import { and, eq } from "drizzle-orm";
 import {
-  Categories,
+  type Categories,
   categories,
-  Subcategories,
+  type Subcategories,
   subcategories,
 } from "../db/schema";
 import {
@@ -13,17 +13,17 @@ import {
   StringSelectMenuInteraction,
   ComponentType,
   AutocompleteInteraction,
-  CacheType,
+  type CacheType,
   MessageFlags,
 } from "discord.js";
 import { reply } from "./reply";
 
 export const executeGetCategoryAndSubcategory = async (
   interaction: ChatInputCommandInteraction,
-  search: string,
+  search: string | null,
 ) => {
-  let category: Categories;
-  let subcategory: Subcategories;
+  let category: Categories | undefined;
+  let subcategory: Subcategories | undefined;
 
   if (search) {
     const subcategoryResult = await getSubcategoryById(interaction, search);
@@ -60,12 +60,12 @@ export const searchAutocomplete = async (
   const categoriesResult = await interaction.client.db
     .select()
     .from(categories)
-    .where(eq(categories.guild, interaction.guildId));
+    .where(eq(categories.guild, interaction.guildId!));
 
   const subcategoriesResult = await interaction.client.db
     .select()
     .from(subcategories)
-    .where(eq(subcategories.guild, interaction.guildId));
+    .where(eq(subcategories.guild, interaction.guildId!));
 
   const choices = subcategoriesResult.map((subcategory) => {
     const category = categoriesResult.find(
@@ -73,7 +73,7 @@ export const searchAutocomplete = async (
     );
 
     return {
-      name: `${category.name}: ${subcategory.name}`,
+      name: `${category!.name}: ${subcategory.name}`,
       value: subcategory.id,
     };
   });
@@ -110,7 +110,7 @@ export const askCategory = async (interaction: ChatInputCommandInteraction) => {
   const allCategoriesResult = await interaction.client.db
     .select()
     .from(categories)
-    .where(eq(categories.guild, interaction.guildId));
+    .where(eq(categories.guild, interaction.guildId!));
 
   const select = new StringSelectMenuBuilder()
     .setCustomId("category_select")
@@ -169,7 +169,7 @@ export const askSubcategory = async (
     .from(subcategories)
     .where(
       and(
-        eq(subcategories.guild, interaction.guildId),
+        eq(subcategories.guild, interaction.guildId!),
         eq(subcategories.category, category.id),
       ),
     );

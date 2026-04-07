@@ -5,7 +5,7 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
-import { SlashCommand } from "../../types";
+import type { SlashCommand } from "../../types";
 import { checkGuildOk } from "../../util/check-guild";
 import {
   searchAutocomplete,
@@ -47,7 +47,7 @@ const command: SlashCommand = {
       .delete(subcategories)
       .where(
         and(
-          eq(subcategories.guild, interaction.guildId),
+          eq(subcategories.guild, interaction.guildId!),
           eq(subcategories.id, result.subcategory.id),
         ),
       );
@@ -57,7 +57,7 @@ const command: SlashCommand = {
       `Subcategorie ${result.subcategory.name} (${result.subcategory.value}) is succesvol verwijderd!`,
     );
 
-    await mutateScoreboard(interaction.client, interaction.guildId);
+    await mutateScoreboard(interaction.client, interaction.guildId!);
   },
 };
 

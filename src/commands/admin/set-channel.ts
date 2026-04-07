@@ -3,7 +3,7 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
-import { SlashCommand } from "../../types";
+import type { SlashCommand } from "../../types";
 import { guilds } from "../../db/schema";
 import { reply } from "../../util/reply";
 
@@ -18,7 +18,7 @@ const command: SlashCommand = {
   execute: async (interaction) => {
     await interaction.client.db
       .insert(guilds)
-      .values({ id: interaction.guildId, log_channel: interaction.channelId })
+      .values({ id: interaction.guildId!, log_channel: interaction.channelId })
       // if the guild already exists, update the log_channel
       .onConflictDoUpdate({
         target: guilds.id,

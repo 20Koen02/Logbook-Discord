@@ -1,7 +1,7 @@
 import { Client, REST, Routes } from "discord.js";
 import { readdir } from "fs/promises";
 import { join } from "path";
-import { Command } from "../types";
+import type { Command } from "../types";
 import env from "../env";
 import { logger } from "../logger";
 

@@ -1,5 +1,5 @@
 import { MessageFlags, SlashCommandBuilder } from "discord.js";
-import { SlashCommand } from "../../types";
+import type { SlashCommand } from "../../types";
 import { stripIndents } from "common-tags";
 
 const command: SlashCommand = {
@@ -14,7 +14,7 @@ const command: SlashCommand = {
     });
     interaction.editReply(stripIndents`
       🏓 Pong!
-      Roundtrip: ${sent.resource.message.createdTimestamp - interaction.createdTimestamp} ms
+      Roundtrip: ${sent.resource!.message!.createdTimestamp - interaction.createdTimestamp} ms
       `);
   },
 };
