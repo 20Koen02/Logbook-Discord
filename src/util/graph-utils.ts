@@ -13,6 +13,7 @@ type GraphPoint = {
 };
 
 export const GRAPH_FILE_NAME = "graph.png";
+const GRAPH_FONT_FAMILY = "Montserrat";
 
 const colors = {
   background: "#202225",
@@ -58,7 +59,7 @@ const getMonthTicks = (year: number, now: Date) => {
 const toCumulativeGraphData = (data: GraphRow[]): GraphPoint[] => {
   let runningAmount = 0;
 
-  return data.map((row) => {
+  const cumulativeData = data.map((row) => {
     runningAmount += row.amount;
 
     return {
@@ -66,12 +67,8 @@ const toCumulativeGraphData = (data: GraphRow[]): GraphPoint[] => {
       date: toUtcIsoString(row.created_at),
     };
   });
-};
 
-const toSteppedLineGraphData = (data: GraphRow[]): GraphPoint[] => {
-  const cumulativeData = toCumulativeGraphData(data);
   const [firstPoint] = cumulativeData;
-
   if (!firstPoint) {
     return cumulativeData;
   }
@@ -111,41 +108,22 @@ const createGraphSpec = (
       anchor: "middle",
       color: colors.text,
       subtitleColor: colors.mutedText,
+      font: GRAPH_FONT_FAMILY,
       fontSize: 48,
+      subtitleFont: GRAPH_FONT_FAMILY,
       subtitleFontSize: 32,
       subtitlePadding: 8,
       offset: 16,
     },
-    layer: [
-      {
-        data: {
-          values: toSteppedLineGraphData(data),
-        },
-        mark: {
-          type: "line",
-          interpolate: "step-after",
-          color: colors.accent,
-          strokeWidth: 6,
-        },
-      },
-      {
-        data: {
-          values: toCumulativeGraphData(data),
-        },
-        mark: {
-          type: "point",
-          filled: true,
-          fill: colors.accent,
-          fillOpacity: 1,
-          stroke: colors.background,
-          strokeOpacity: 1,
-          strokeWidth: 2,
-          size: 200,
-          color: colors.accent,
-          opacity: 1,
-        },
-      },
-    ],
+    data: {
+      values: toCumulativeGraphData(data),
+    },
+    mark: {
+      type: "line",
+      interpolate: "step-after",
+      color: colors.accent,
+      strokeWidth: 6,
+    },
     encoding: {
       x: {
         field: "date",
@@ -194,6 +172,7 @@ const createGraphSpec = (
       },
       axis: {
         labelFontSize: 32,
+        titleFont: GRAPH_FONT_FAMILY,
         titleFontSize: 32,
         titleFontWeight: "normal",
       },

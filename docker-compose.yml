@@ -14,4 +14,5 @@ services:
     volumes:
       - ./.env:/usr/src/app/.env
       - ./local.db:/usr/src/app/local.db
+      # - ./production.db:/usr/src/app/production.db
       - ./logs:/usr/src/app/logs

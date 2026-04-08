@@ -8,6 +8,7 @@ WORKDIR /usr/src/app
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
+        fontconfig \
         python3 \
         pkg-config \
         libcairo2-dev \
@@ -17,6 +18,9 @@ RUN apt-get update \
         librsvg2-dev \
     && rm -rf /var/lib/apt/lists/* \
     && corepack enable
+
+COPY fonts/ /usr/local/share/fonts/truetype/custom/
+RUN fc-cache -f
 
 ########################
 # deps: install once, cacheable
